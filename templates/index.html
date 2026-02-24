@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SMS Spam Checker</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="logo-section">
+            <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
+            <h2>SMS Spam Checker</h2>
+        </div>
+
+        <form action="/predict" method="POST" enctype="multipart/form-data">
+
+            <label>Enter SMS Text</label>
+            <textarea name="message" placeholder="Type your SMS message here..."></textarea>
+
+            <div class="divider">OR</div>
+
+            <label>Upload SMS Screenshot</label>
+            <input type="file" name="image" accept="image/*">
+
+            <button type="submit">Check Message</button>
+
+        </form>
+
+        {% if prediction_text %}
+        <div class="result">
+            <h3>Result: {{ prediction_text }}</h3>
+            <p>Spam Probability: {{ probability }}%</p>
+
+            {% if extracted_text %}
+            <div class="extracted">
+                <h4>Extracted Text:</h4>
+                <p>{{ extracted_text }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

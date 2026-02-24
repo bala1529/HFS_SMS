@@ -1,0 +1,156 @@
+/* FONT */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+
+/* BACKGROUND */
+.container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(135deg, #5f9cff, #b46bff);
+}
+
+/* CARD (GLASS EFFECT) */
+.card {
+    width: 370px;
+    padding: 30px;
+
+    border-radius: 20px;
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(18px);
+
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* LOGO */
+.logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+}
+
+/* TITLE */
+.logo-section h2 {
+    color: white;
+    margin-bottom: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* LABELS */
+label {
+    color: white;
+    font-size: 13px;
+    font-weight: 400;
+    display: block;
+    text-align: left;
+    margin: 10px 0 5px 10px;
+}
+
+/* TEXTAREA */
+textarea {
+    width: 100%;
+    height: 100px;
+
+    border-radius: 12px;
+    border: none;
+    outline: none;
+
+    padding: 12px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+
+    margin-bottom: 10px;
+
+    background: rgba(255,255,255,0.9);
+}
+
+/* DIVIDER */
+.divider {
+    color: white;
+    margin: 15px 0;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* FILE INPUT */
+input[type="file"] {
+    width: 100%;
+    margin-bottom: 15px;
+    color: white;
+    font-size: 13px;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(90deg, #ff6aa2, #ff8a65);
+    color: white;
+
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+/* RESULT BOX */
+.result {
+    margin-top: 20px;
+    padding: 15px;
+
+    border-radius: 15px;
+
+    background: rgba(255,255,255,0.15);
+    color: white;
+}
+
+/* RESULT TEXT */
+.result h3 {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* PROBABILITY */
+.result p {
+    margin: 5px 0 10px;
+    font-weight: 400;
+}
+
+/* EXTRACTED TEXT BOX */
+.extracted {
+    margin-top: 10px;
+    padding: 10px;
+
+    border-radius: 10px;
+    background: rgba(0,0,0,0.25);
+
+    text-align: left;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* SCROLL IF TEXT LONG */
+.extracted p {
+    max-height: 120px;
+    overflow-y: auto;
+}
