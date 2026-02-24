@@ -16,13 +16,10 @@ model = joblib.load("spam_model.pkl")
 vectorizer = joblib.load("vectorizer.pkl")
 
 # -----------------------------
-# TESSERACT SETUP (LOCAL ONLY)
+# TESSERACT SETUP
 # -----------------------------
 if os.name == "nt":
     pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-
-UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # -----------------------------
 # TRUSTED DOMAINS
@@ -51,13 +48,13 @@ def clean_text(text):
     return text
 
 # -----------------------------
-# 🔥 ADVANCED URL CHECK
+# URL CHECK
 # -----------------------------
 def check_url_spam(original_text):
     urls = re.findall(r'https?://\S+|www\.\S+', original_text.lower())
 
     if not urls:
-        return 0  # no URL
+        return 0
 
     score = 0
 
@@ -65,22 +62,19 @@ def check_url_spam(original_text):
         parsed = urlparse(url if url.startswith("http") else "http://" + url)
         domain = parsed.netloc.replace("www.", "")
 
-        # ❌ NOT trusted domain
         if not any(td in domain for td in trusted_domains):
             score += 3
 
-        # ❌ fake domain pattern (amaz0n, g00gle)
         if re.search(r"[a-z]+[0-9]+[a-z]+", domain):
             score += 3
 
-        # ❌ suspicious TLD
         if any(domain.endswith(tld) for tld in [".xyz", ".top", ".click", ".ru"]):
             score += 2
 
     return score
 
 # -----------------------------
-# RULE-BASED SCORE
+# RULE SCORE
 # -----------------------------
 def rule_based_score(msg):
     score = 0
@@ -111,7 +105,7 @@ def rule_based_score(msg):
     return score
 
 # -----------------------------
-# TRUSTED SCORE
+# TRUST SCORE
 # -----------------------------
 def trusted_score(msg):
     score = 0
@@ -129,6 +123,9 @@ def trusted_score(msg):
 
     return score
 
+# -----------------------------
+# ROUTES
+# -----------------------------
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -138,15 +135,11 @@ def predict():
 
     message = ""
 
-    # -----------------------------
     # TEXT INPUT
-    # -----------------------------
     if "message" in request.form and request.form["message"].strip():
         message = request.form["message"]
 
-    # -----------------------------
-    # IMAGE INPUT (OCR)
-    # -----------------------------
+    # IMAGE INPUT
     elif "image" in request.files:
         file = request.files["image"]
 
@@ -161,68 +154,47 @@ def predict():
             message = pytesseract.image_to_string(image)
 
             if not message.strip():
-                message = "No readable text found in image"
+                message = "No readable text found"
 
         except:
-            message = "Image uploaded (text extraction not available)"
+            message = "OCR failed"
 
     else:
         return render_template("index.html", prediction_text="No input provided")
 
-    # -----------------------------
-    # CLEAN TEXT
-    # -----------------------------
     cleaned_msg = clean_text(message)
 
-    # -----------------------------
-    # IMAGE FALLBACK
-    # -----------------------------
-    if "image uploaded" in cleaned_msg:
+    if "ocr failed" in cleaned_msg:
         return render_template("index.html",
                                prediction_text="Unknown",
                                probability=50,
                                extracted_text=message)
 
-    # -----------------------------
-    # VECTORIZE
-    # -----------------------------
+    # ML
     msg_vec = vectorizer.transform([cleaned_msg])
-
-    # -----------------------------
-    # ML PREDICTION
-    # -----------------------------
     ml_pred = model.predict(msg_vec)[0]
     ml_prob = model.predict_proba(msg_vec)[0][1]
 
-    # -----------------------------
     # SCORES
-    # -----------------------------
     rule_score = rule_based_score(cleaned_msg)
     t_score = trusted_score(cleaned_msg)
     url_score = check_url_spam(message)
 
     total_score = rule_score + url_score
 
-    # -----------------------------
-    # 🔥 FINAL DECISION ENGINE (ULTIMATE)
-    # -----------------------------
-
-    # 🚨 Strong URL phishing
+    # FINAL DECISION
     if url_score >= 5:
         result = "Spam (Phishing URL)"
         probability = 0.95
 
-    # 🚨 High ML confidence
     elif ml_prob > 0.90:
         result = "Spam"
         probability = ml_prob
 
-    # ✅ Very safe ML
     elif ml_prob < 0.20 and url_score == 0:
         result = "Not Spam"
         probability = ml_prob
 
-    # ⚖️ Hybrid decision
     else:
         if total_score >= 5 and t_score == 0:
             result = "Spam"
@@ -236,7 +208,4 @@ def predict():
                            probability=round(probability * 100, 2),
                            extracted_text=message)
 
-if __name__ == "__main__":
-
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+# ❌ REMOVE app.run (Gunicorn will handle it)
